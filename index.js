@@ -1,16 +1,6 @@
 const express = require('express')
 const PORT = process.env.PORT || 8888
-const app = express()
 
-// respond with "hello world" when a GET request is made to the homepage
-app.get('/', function(req, res) {
-  res.send({a:'b'})
-});
-
-app.get('/abc', function(req, res) {
-  res.send('abcd')
-});
-
-app.listen(8888, function () {
-  console.log('ModusCreate-NodeJS-API listening on port 8888!');
-});
+express()
+  .get('/', (req, res) => res.send('pages/index'))
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
