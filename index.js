@@ -1,15 +1,15 @@
-var express = require('express');
-var app = express();
+var express = require('express')
+var app = express()
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', function(req, res) {
-  res.send('hello world')
+  res.send({a:'b'})
 });
 
 app.get('/abc', function(req, res) {
   res.send('abcd')
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(8888, function () {
+  console.log('ModusCreate-NodeJS-API listening on port 8888!');
 });
