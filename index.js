@@ -16,7 +16,6 @@ express()
 const api = 'https://one.nhtsa.gov/webapi/api/'
 
 function index (req, res) {
-  // console.log(req)
   res.send({result: 'success', detail: 'welcome to NHTSA Safety API'})
 }
 
