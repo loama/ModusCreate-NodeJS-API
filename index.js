@@ -1,12 +1,15 @@
 const express = require('express')
 const PORT = process.env.PORT || 8888
 const axios = require('axios')
+const cors = require('cors')
 
 express()
   .use(express.json())
+  .use(cors())
   .get('/', (req, res) => index(req,res))
   .get('/vehicles/*', (req, res) => vehicles(req, res))
   .post('/vehicles', (req, res) => vehicles(req, res))
+  .get('/cors/*', (req, res) => corsCleaner(req, res))
   .get('*', (req, res) => res.status(404).send(notFound(req)))
   .listen(PORT, () => console.log(`Listening on PORT: ${ PORT }, open http://localhost:${ PORT } to preview it`))
 
@@ -103,6 +106,15 @@ function vehicles (req, res) {
         res.send(result)
       }
 
+    })
+}
+
+function corsCleaner(req, res) {
+  let path = req.path.split('cors/')[1]
+  console.log(api + path)
+  axios.get(api + 'SafetyRatings/' + path + '/?format=json')
+    .then((response) => {
+      res.send(response.data)
     })
 }
 
