@@ -18,7 +18,7 @@ function index (req, res) {
 }
 
 function error (message) {
-  return {result: 'error', detail: message}
+  return {Count: 0, Results: [], result: 'error', detail: message}
 }
 
 function vehicles (req, res) {
@@ -35,6 +35,7 @@ function vehicles (req, res) {
     model = req.body.model
   }
 
+// VALIDATE DATA
   // check that model is a valid year
   if (1900 < modelyear && modelyear < 2020) {
     // valid
@@ -55,25 +56,36 @@ function vehicles (req, res) {
   } else {
     res.status(400).send(error('invalid model specified'))
   }
+// END DATA VALIDATION
 
+// DO THE API REQUESTS
   axios.get(api + 'SafetyRatings/modelyear/' + modelyear.toString() + '/make/' + make + '/model/' + model + '?format=json')
     .then((response) => {
-      // console.log(response.data)
-      var results = []
-      var requests = []
+
+      let results = []
+      let vehicles = response.data.Results
+
+      for (let i = 0; i < vehicles.length; i++) {
+        results.push({
+          Description: vehicles[i]['VehicleDescription'],
+          VehicleId: vehicles[i]['VehicleId']
+        })
+      }
 
       var result = {
         Count: response.data.Count,
-        Results: response.data.Results
+        Results: results
       }
 
-      if (req.query.withRating || req.body.withRating) {
+      var requests = [] // Create an array for all the requests that axios should make
+      if (req.query.withRating === 'true') {
         // if withRating, add rating to every result
-        for (let i = 0; i < response.data.Results.length; i++) {
-          requests.push(axios.get(api + 'SafetyRatings/VehicleId/' + response.data.Results[i].VehicleId.toString() + '?format=json'))
+        for (let i = 0; i < results.length; i++) {
+          requests.push(axios.get(api + 'SafetyRatings/VehicleId/' + vehicles[i]['VehicleId'].toString() + '?format=json'))
         }
 
         axios.all(requests).then((response) => {
+          results = []
           response.forEach((carRating => {
             var car = {
               CrashRating: carRating.data.Results[0].OverallRating,
