@@ -17,7 +17,7 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
-    "tape": "^4.7.0"
+    "tape": "^4.9.1"
   },
   "repository": {
     "type": "git",
