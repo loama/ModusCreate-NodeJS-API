@@ -1,6 +1,6 @@
 const express = require('express')
 const PORT = process.env.PORT || 8888
-const request = require('request')
+const axios = require('axios')
 
 express()
   .use(express.json())
@@ -23,6 +23,7 @@ function error (message) {
 
 function vehicles (req, res) {
   let modelYear, make, model
+
   if (req.method === 'GET') {
     const path = req.path.split('/')
     modelyear = path[2]
@@ -55,19 +56,42 @@ function vehicles (req, res) {
     res.status(400).send(error('invalid model specified'))
   }
 
-  request(api + 'SafetyRatings/modelyear/' + modelyear.toString() + '/make/' + make + '/model/' + model + '?format=json', function (error, response, body) {
-    // console.log('error:', error); // Print the error if one occurred
-    // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-    // console.log('body:', body); // response body
-    let data = JSON.parse(response.body)
+  axios.get(api + 'SafetyRatings/modelyear/' + modelyear.toString() + '/make/' + make + '/model/' + model + '?format=json')
+    .then((response) => {
+      // console.log(response.data)
+      var results = []
+      var requests = []
 
-    let result = {
-      Count: data.Count,
-      Results: data.Results
-    }
+      var result = {
+        Count: response.data.Count,
+        Results: response.data.Results
+      }
 
-    res.send(result)
-  })
+      if (req.query.withRating || req.body.withRating) {
+        // if withRating, add rating to every result
+        for (let i = 0; i < response.data.Results.length; i++) {
+          requests.push(axios.get(api + 'SafetyRatings/VehicleId/' + response.data.Results[i].VehicleId.toString() + '?format=json'))
+        }
+
+        axios.all(requests).then((response) => {
+          response.forEach((carRating => {
+            var car = {
+              CrashRating: carRating.data.Results[0].OverallRating,
+              Description: carRating.data.Results[0].VehicleDescription,
+              VehicleId: carRating.data.Results[0].VehicleId
+            }
+            results.push(car)
+          }))
+
+          result.Results = results
+          res.send(result)
+        })
+
+      } else {
+        res.send(result)
+      }
+
+    })
 }
 
 function notFound(req) {

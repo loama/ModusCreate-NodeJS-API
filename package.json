@@ -12,9 +12,9 @@
     "develop": "nodemon app.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "ejs": "^2.5.6",
-    "express": "^4.15.2",
-    "request": "^2.88.0"
+    "express": "^4.15.2"
   },
   "devDependencies": {
     "tape": "^4.9.1"
