@@ -1,5 +1,6 @@
-var express = require('express')
-var app = express()
+const express = require('express')
+const PORT = process.env.PORT || 8888
+const app = express()
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', function(req, res) {
