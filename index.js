@@ -16,7 +16,13 @@ express()
 const api = 'https://one.nhtsa.gov/webapi/api/'
 
 function index (req, res) {
-  res.send({result: 'success', detail: 'welcome to NHTSA Safety API'})
+  axios.get(api + 'SafetyRatings/' + '?format=json')
+    .then((response) => {
+      res.send({result: 'success', detail: 'welcome to NHTSA Safety API', Results: response.data.Results})
+    })
+    .catch((err) => {
+
+    })
 }
 
 function error (message) {
