@@ -16,7 +16,7 @@ express()
 const api = 'https://one.nhtsa.gov/webapi/api/'
 
 function index (req, res) {
-  axios.get(api + 'SafetyRatings/' + '?format=json')
+  axios.get(api + 'SafetyRatings' + '?format=json')
     .then((response) => {
       res.send({result: 'success', detail: 'welcome to NHTSA Safety API', Results: response.data.Results})
     })
@@ -116,7 +116,7 @@ function vehicles (req, res) {
 
 function corsCleaner(req, res) {
   let path = req.path.split('cors/')[1]
-  console.log(api + path)
+  console.log(api + 'SafetyRatings/' + path + '/?format=json')
   axios.get(api + 'SafetyRatings/' + path + '/?format=json')
     .then((response) => {
       res.send(response.data)
